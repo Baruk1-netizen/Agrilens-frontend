@@ -8,7 +8,6 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Upload, Camera, CheckCircle, Microscope, Sun, Droplets, BarChart3, Users, Shield, Star } from "lucide-react"
 
-const [openModal, setOpenModal] = useState(false)
 // Internal Features Section (not exported)
 const FeaturesSection = () => {
   const features = [
