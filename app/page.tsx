@@ -7,6 +7,7 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Upload, Camera, CheckCircle, Microscope, Sun, Droplets, BarChart3, Users, Shield, Star } from "lucide-react"
+import AIRecommendations from "@/components/Ai/ai-recommendations"
 
 // Internal Features Section (not exported)
 const FeaturesSection = () => {
@@ -377,7 +378,7 @@ function home() {
       <HowItWorksSection />
       <UploadSection />
       <TestimonialsSection />
-
+      <AIRecommendations />
       <Footer />
     </div>
   )
