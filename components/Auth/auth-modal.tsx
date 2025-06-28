@@ -50,7 +50,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
               onClick={handleClose}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10"
             >
-              <X className="h-6 w-6" />
+              <X className="h-6 w-4" />
             </button>
 
             {/* Form Content */}
