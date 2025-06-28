@@ -68,7 +68,7 @@ export const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-emerald-400" />
-                <span className="text-gray-300">San Francisco, CA</span>
+                <span className="text-gray-300">Dedan Kimathi, Nyeri, Kenya</span>
               </div>
             </div>
           </div>
