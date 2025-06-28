@@ -2,7 +2,7 @@
 
 import Footer from "@/components/Footer"
 import HeroSection from "@/components/HeroSection"
-import NavBar from "@/components/NavBar"
+import { NavBar } from "@/components/NavBar"
 import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"

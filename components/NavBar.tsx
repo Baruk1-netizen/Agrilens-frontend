@@ -2,12 +2,12 @@
 
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Leaf, Menu, X } from 'lucide-react'
-import Image from "next/image"
-import Auth from "./Auth"
+import { Leaf, Menu, X } from "lucide-react"
+import { AuthModal } from "@/components/Auth/auth-modal"
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   const navItems = [
     { name: "Features", href: "#features" },
@@ -16,13 +16,6 @@ export const Navbar = () => {
     { name: "Testimonials", href: "#testimonials" },
     { name: "Contact", href: "#contact" },
   ]
-
-  const handleAuth = () => {
-    // Handle authentication logic here
-    return (
-<Auth />
-    )
-  }
 
   return (
     <motion.nav
@@ -34,13 +27,12 @@ export const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
-           <Image
-                src="/assets/logo.png"
-                alt="AgriLens Logo"
-                width={180}
-                height={40}
-                className=""
-                />
+            <div className="bg-gradient-to-r from-emerald-400 to-teal-500 p-2 rounded-lg">
+              <Leaf className="h-6 w-6 text-white" />
+            </div>
+            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+              AgriLens
+            </span>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -56,10 +48,10 @@ export const Navbar = () => {
               </motion.a>
             ))}
             <motion.button
+              onClick={() => setShowAuthModal(true)}
               className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-2 rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all duration-200"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-                onClick={handleAuth}
             >
               Get Started
             </motion.button>
@@ -91,13 +83,20 @@ export const Navbar = () => {
                 {item.name}
               </a>
             ))}
-            <button className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:from-emerald-600 hover:to-teal-700 transition-all duration-200">
+            <button
+              onClick={() => setShowAuthModal(true)}
+              className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-2 rounded-full mt-4 hover:from-emerald-600 hover:to-teal-700 transition-all duration-200"
+            >
               Get Started
             </button>
           </motion.div>
         )}
       </div>
+      {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
     </motion.nav>
   )
 }
-export default Navbar
+
+
+export const NavBar = Navbar
