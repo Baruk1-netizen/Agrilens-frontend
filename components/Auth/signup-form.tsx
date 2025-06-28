@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, User, Leaf } from "lucide-react"
+import Image from "next/image"
 
 interface SignupFormProps {
   onSwitchToLogin: () => void
@@ -105,12 +106,18 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
     >
       <div className="text-center mb-8">
         <div className="flex items-center justify-center space-x-2 mb-4">
-          <div className="bg-gradient-to-r from-emerald-400 to-teal-500 p-2 rounded-lg">
-            <Leaf className="h-6 w-6 text-white" />
-          </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-            AgriLens
-          </span>
+
+                    {/* Logo */}
+          <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
+           <Image
+                src="/assets/logo.png"
+                alt="AgriLens Logo"
+                width={180}
+                height={40}
+                className=""
+                />
+          </motion.div>
+
         </div>
         <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
         <p className="text-gray-400">Join AgriLens to start detecting crop diseases</p>
