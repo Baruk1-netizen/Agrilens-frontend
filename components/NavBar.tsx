@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Leaf, Menu, X } from "lucide-react"
 import { AuthModal } from "@/components/Auth/auth-modal"
+import Image from "next/image"
 
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
@@ -25,14 +26,15 @@ export const Navbar = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
+                    {/* Logo */}
           <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
-            <div className="bg-gradient-to-r from-emerald-400 to-teal-500 p-2 rounded-lg">
-              <Leaf className="h-6 w-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
-              AgriLens
-            </span>
+           <Image
+                src="/assets/logo.png"
+                alt="AgriLens Logo"
+                width={180}
+                height={40}
+                className=""
+                />
           </motion.div>
 
           {/* Desktop Navigation */}
