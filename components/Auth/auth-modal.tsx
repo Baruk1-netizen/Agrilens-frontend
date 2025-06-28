@@ -27,24 +27,28 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          onClick={handleClose}
-        >
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998]"
+            onClick={handleClose}
+          />
+
+          {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-slate-900 border border-emerald-500/20 rounded-2xl p-8 w-full max-w-md relative"
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-slate-900 border border-emerald-500/20 rounded-2xl p-8 w-full max-w-md mx-4 z-[9999] shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               onClick={handleClose}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors duration-200 z-10"
             >
               <X className="h-6 w-6" />
             </button>
@@ -67,7 +71,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
               )}
             </AnimatePresence>
           </motion.div>
-        </motion.div>
+        </>
       )}
     </AnimatePresence>
   )
