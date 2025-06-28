@@ -232,226 +232,230 @@ export const AIRecommendations = () => {
   }
 
   return (
-    <div className="bg-slate-900 border border-emerald-500/20 rounded-2xl overflow-hidden shadow-2xl">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="bg-white/20 p-2 rounded-lg">
-              <Bot className="h-6 w-6 text-white" />
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-slate-900 border border-emerald-500/20 rounded-2xl overflow-hidden shadow-2xl">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Bot className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white">AI Assistant</h2>
+                <p className="text-emerald-100 text-sm">Crop Analysis & Recommendations</p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">AI Assistant</h2>
-              <p className="text-emerald-100 text-sm">Crop Analysis & Recommendations</p>
+            <div className="flex space-x-2">
+              <button className="bg-white/20 p-2 rounded-lg text-white hover:bg-white/30 transition-colors">
+                <Download className="h-5 w-5" />
+              </button>
+              <button className="bg-white/20 p-2 rounded-lg text-white hover:bg-white/30 transition-colors">
+                <Share2 className="h-5 w-5" />
+              </button>
             </div>
           </div>
-          <div className="flex space-x-2">
-            <button className="bg-white/20 p-2 rounded-lg text-white hover:bg-white/30 transition-colors">
-              <Download className="h-5 w-5" />
-            </button>
-            <button className="bg-white/20 p-2 rounded-lg text-white hover:bg-white/30 transition-colors">
-              <Share2 className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
 
-        {/* Tab Navigation */}
-        <div className="flex space-x-4 mt-6">
-          <button
-            onClick={() => setActiveTab("recommendations")}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              activeTab === "recommendations" ? "bg-white/20 text-white" : "text-emerald-100 hover:bg-white/10"
-            }`}
-          >
-            Recommendations
-          </button>
-          <button
-            onClick={() => setActiveTab("chat")}
-            className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              activeTab === "chat" ? "bg-white/20 text-white" : "text-emerald-100 hover:bg-white/10"
-            }`}
-          >
-            Chat Assistant
-          </button>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="h-96 overflow-hidden">
-        <AnimatePresence mode="wait">
-          {activeTab === "recommendations" && (
-            <motion.div
-              key="recommendations"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="h-full overflow-y-auto p-6 space-y-4"
+          {/* Tab Navigation */}
+          <div className="flex space-x-4 mt-6">
+            <button
+              onClick={() => setActiveTab("recommendations")}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                activeTab === "recommendations" ? "bg-white/20 text-white" : "text-emerald-100 hover:bg-white/10"
+              }`}
             >
-              {recommendations.map((rec, index) => {
-                const IconComponent = getTypeIcon(rec.type)
-                return (
-                  <motion.div
-                    key={rec.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="bg-slate-800 border border-emerald-500/20 rounded-xl p-4 hover:border-emerald-500/40 transition-all duration-200"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-2 rounded-lg">
-                          <IconComponent className="h-5 w-5 text-white" />
+              Recommendations
+            </button>
+            <button
+              onClick={() => setActiveTab("chat")}
+              className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                activeTab === "chat" ? "bg-white/20 text-white" : "text-emerald-100 hover:bg-white/10"
+              }`}
+            >
+              Chat Assistant
+            </button>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div className="h-96 overflow-hidden">
+          <AnimatePresence mode="wait">
+            {activeTab === "recommendations" && (
+              <motion.div
+                key="recommendations"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="h-full overflow-y-auto p-6 space-y-4"
+              >
+                {recommendations.map((rec, index) => {
+                  const IconComponent = getTypeIcon(rec.type)
+                  return (
+                    <motion.div
+                      key={rec.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="bg-slate-800 border border-emerald-500/20 rounded-xl p-4 hover:border-emerald-500/40 transition-all duration-200"
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-center space-x-3">
+                          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-2 rounded-lg">
+                            <IconComponent className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h3 className="text-white font-semibold">{rec.title}</h3>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <span
+                                className={`px-2 py-1 rounded-full text-xs border ${getSeverityColor(rec.severity)}`}
+                              >
+                                {rec.severity.toUpperCase()}
+                              </span>
+                              <span className="text-emerald-400 text-sm">{rec.confidence}% confidence</span>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-white font-semibold">{rec.title}</h3>
-                          <div className="flex items-center space-x-2 mt-1">
-                            <span className={`px-2 py-1 rounded-full text-xs border ${getSeverityColor(rec.severity)}`}>
-                              {rec.severity.toUpperCase()}
-                            </span>
-                            <span className="text-emerald-400 text-sm">{rec.confidence}% confidence</span>
+                        <div className="flex items-center text-gray-400 text-sm">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {rec.timestamp.toLocaleTimeString()}
+                        </div>
+                      </div>
+
+                      <p className="text-gray-300 mb-4">{rec.description}</p>
+
+                      <div className="space-y-2">
+                        <h4 className="text-emerald-400 font-medium text-sm">Recommended Actions:</h4>
+                        <ul className="space-y-1">
+                          {rec.actions.map((action, actionIndex) => (
+                            <li key={actionIndex} className="flex items-start space-x-2 text-gray-300 text-sm">
+                              <CheckCircle className="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                              <span>{action}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </motion.div>
+                  )
+                })}
+              </motion.div>
+            )}
+
+            {activeTab === "chat" && (
+              <motion.div
+                key="chat"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="h-full flex flex-col"
+              >
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                  {chatMessages.map((message) => (
+                    <motion.div
+                      key={message.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`flex items-start space-x-2 max-w-xs ${message.type === "user" ? "flex-row-reverse space-x-reverse" : ""}`}
+                      >
+                        <div
+                          className={`p-2 rounded-full ${message.type === "user" ? "bg-emerald-500" : "bg-slate-700"}`}
+                        >
+                          {message.type === "user" ? (
+                            <User className="h-4 w-4 text-white" />
+                          ) : (
+                            <Bot className="h-4 w-4 text-emerald-400" />
+                          )}
+                        </div>
+                        <div
+                          className={`p-3 rounded-lg ${
+                            message.type === "user"
+                              ? "bg-emerald-500 text-white"
+                              : "bg-slate-800 text-gray-300 border border-emerald-500/20"
+                          }`}
+                        >
+                          <p className="text-sm">{message.content}</p>
+                          <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</span>
+                            {message.isVoice && (
+                              <button
+                                onClick={() => setIsPlaying(!isPlaying)}
+                                className="ml-2 p-1 rounded hover:bg-white/10 transition-colors"
+                              >
+                                {isPlaying ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center text-gray-400 text-sm">
-                        <Clock className="h-4 w-4 mr-1" />
-                        {rec.timestamp.toLocaleTimeString()}
-                      </div>
-                    </div>
+                    </motion.div>
+                  ))}
 
-                    <p className="text-gray-300 mb-4">{rec.description}</p>
-
-                    <div className="space-y-2">
-                      <h4 className="text-emerald-400 font-medium text-sm">Recommended Actions:</h4>
-                      <ul className="space-y-1">
-                        {rec.actions.map((action, actionIndex) => (
-                          <li key={actionIndex} className="flex items-start space-x-2 text-gray-300 text-sm">
-                            <CheckCircle className="h-4 w-4 text-emerald-400 mt-0.5 flex-shrink-0" />
-                            <span>{action}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </motion.div>
-                )
-              })}
-            </motion.div>
-          )}
-
-          {activeTab === "chat" && (
-            <motion.div
-              key="chat"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="h-full flex flex-col"
-            >
-              {/* Chat Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {chatMessages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
-                  >
-                    <div
-                      className={`flex items-start space-x-2 max-w-xs ${message.type === "user" ? "flex-row-reverse space-x-reverse" : ""}`}
-                    >
-                      <div
-                        className={`p-2 rounded-full ${message.type === "user" ? "bg-emerald-500" : "bg-slate-700"}`}
-                      >
-                        {message.type === "user" ? (
-                          <User className="h-4 w-4 text-white" />
-                        ) : (
+                  {isTyping && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+                      <div className="flex items-center space-x-2">
+                        <div className="p-2 rounded-full bg-slate-700">
                           <Bot className="h-4 w-4 text-emerald-400" />
-                        )}
-                      </div>
-                      <div
-                        className={`p-3 rounded-lg ${
-                          message.type === "user"
-                            ? "bg-emerald-500 text-white"
-                            : "bg-slate-800 text-gray-300 border border-emerald-500/20"
-                        }`}
-                      >
-                        <p className="text-sm">{message.content}</p>
-                        <div className="flex items-center justify-between mt-2">
-                          <span className="text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</span>
-                          {message.isVoice && (
-                            <button
-                              onClick={() => setIsPlaying(!isPlaying)}
-                              className="ml-2 p-1 rounded hover:bg-white/10 transition-colors"
-                            >
-                              {isPlaying ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
-                            </button>
-                          )}
+                        </div>
+                        <div className="bg-slate-800 border border-emerald-500/20 p-3 rounded-lg">
+                          <div className="flex space-x-1">
+                            <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
+                            <div
+                              className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"
+                              style={{ animationDelay: "0.1s" }}
+                            ></div>
+                            <div
+                              className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"
+                              style={{ animationDelay: "0.2s" }}
+                            ></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
-
-                {isTyping && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                    <div className="flex items-center space-x-2">
-                      <div className="p-2 rounded-full bg-slate-700">
-                        <Bot className="h-4 w-4 text-emerald-400" />
-                      </div>
-                      <div className="bg-slate-800 border border-emerald-500/20 p-3 rounded-lg">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
-                          <div
-                            className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.1s" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-                <div ref={chatEndRef} />
-              </div>
-
-              {/* Chat Input */}
-              <div className="border-t border-emerald-500/20 p-4">
-                <div className="flex items-center space-x-2">
-                  <div className="flex-1 relative">
-                    <input
-                      type="text"
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                      placeholder="Ask about your crops..."
-                      className="w-full bg-slate-800 border border-emerald-500/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                    />
-                  </div>
-
-                  <button
-                    onClick={isRecording ? stopRecording : startRecording}
-                    className={`p-2 rounded-lg transition-all duration-200 ${
-                      isRecording
-                        ? "bg-red-500 text-white animate-pulse"
-                        : "bg-slate-800 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10"
-                    }`}
-                  >
-                    {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-                  </button>
-
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim()}
-                    className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                  >
-                    <Send className="h-5 w-5" />
-                  </button>
+                    </motion.div>
+                  )}
+                  <div ref={chatEndRef} />
                 </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
+                {/* Chat Input */}
+                <div className="border-t border-emerald-500/20 p-4">
+                  <div className="flex items-center space-x-2">
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                        placeholder="Ask about your crops..."
+                        className="w-full bg-slate-800 border border-emerald-500/20 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      />
+                    </div>
+
+                    <button
+                      onClick={isRecording ? stopRecording : startRecording}
+                      className={`p-2 rounded-lg transition-all duration-200 ${
+                        isRecording
+                          ? "bg-red-500 text-white animate-pulse"
+                          : "bg-slate-800 border border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10"
+                      }`}
+                    >
+                      {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
+                    </button>
+
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!inputMessage.trim()}
+                      className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white p-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    >
+                      <Send className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   )
