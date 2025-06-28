@@ -28,7 +28,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop Overlay - dims background but keeps it visible */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -37,7 +37,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
             onClick={handleClose}
           />
 
-          {/* Modal */}
+          {/* Modal - appears in center without replacing content */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -76,5 +76,4 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
     </AnimatePresence>
   )
 }
-
 export default AuthModal
