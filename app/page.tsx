@@ -377,8 +377,9 @@ function home() {
       <FeaturesSection />
       <HowItWorksSection />
       <UploadSection />
-      <TestimonialsSection />
       <AIRecommendations />
+      <TestimonialsSection />
+      
       <Footer />
     </div>
   )
