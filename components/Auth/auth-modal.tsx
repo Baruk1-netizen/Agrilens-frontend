@@ -33,7 +33,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-6 pt-20 pb-6"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-6 pt-20 pb-6 -mt-20"
             onClick={handleClose}
           >
             {/* Modal - centered with equal margins all around */}
@@ -41,7 +41,8 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-slate-900 border border-emerald-500/20 rounded-2xl p-8 w-full max-w-md shadow-2xl relative my-auto"
+              className="bg-slate-900 border border-emerald-500/20 md:h-[600px] sm:h-[550px] rounded-2xl p-8 w-full max-w-md md:mt-0 mt-0 sm:mt-20 shadow-2xl relative my-auto"
+
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}

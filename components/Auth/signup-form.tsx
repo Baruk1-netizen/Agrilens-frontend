@@ -112,22 +112,22 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
            <Image
                 src="/assets/logo.png"
                 alt="AgriLens Logo"
-                width={180}
-                height={40}
+                width={120}
+                height={70}
                 className=""
                 />
           </motion.div>
 
         </div>
-        <h2 className="text-3xl font-bold text-white mb-2">Create Account</h2>
+        <h2 className="text-xl font-bold text-white">Create Account</h2>
         <p className="text-gray-400">Join AgriLens to start detecting crop diseases</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-2">
         {/* Name Fields */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="firstName" className="block text-sm font-medium text-gray-300 -mt-4">
               First Name
             </label>
             <div className="relative">
@@ -158,7 +158,7 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
           </div>
 
           <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="lastName" className="block text-sm font-medium text-gray-300 -mt-4">
               Last Name
             </label>
             <input
@@ -186,7 +186,7 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
 
         {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-300 -mt-2">
             Email Address
           </label>
           <div className="relative">
@@ -218,7 +218,7 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
 
         {/* Password Field */}
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="password" className="block text-sm font-medium text-gray-300 -mt-2">
             Password
           </label>
           <div className="relative">

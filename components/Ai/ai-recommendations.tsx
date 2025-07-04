@@ -39,6 +39,7 @@ interface ChatMessage {
 
 export const AIRecommendations = () => {
   const [activeTab, setActiveTab] = useState<"recommendations" | "chat">("recommendations")
+  const [isMounted, setIsMounted] = useState(false)
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     {
       id: "1",
@@ -109,8 +110,17 @@ export const AIRecommendations = () => {
   }
 
   useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  useEffect(() => {
     scrollToBottom()
   }, [chatMessages])
+
+  const formatTime = (date: Date) => {
+    if (!isMounted) return "00:00:00"
+    return date.toLocaleTimeString()
+  }
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
@@ -317,7 +327,7 @@ export const AIRecommendations = () => {
                         </div>
                         <div className="flex items-center text-gray-400 text-sm">
                           <Clock className="h-4 w-4 mr-1" />
-                          {rec.timestamp.toLocaleTimeString()}
+                          {formatTime(rec.timestamp)}
                         </div>
                       </div>
 
@@ -378,7 +388,7 @@ export const AIRecommendations = () => {
                         >
                           <p className="text-sm">{message.content}</p>
                           <div className="flex items-center justify-between mt-2">
-                            <span className="text-xs opacity-70">{message.timestamp.toLocaleTimeString()}</span>
+                            <span className="text-xs opacity-70">{formatTime(message.timestamp)}</span>
                             {message.isVoice && (
                               <button
                                 onClick={() => setIsPlaying(!isPlaying)}

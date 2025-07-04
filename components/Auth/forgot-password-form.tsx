@@ -52,17 +52,17 @@ export const ForgotPasswordForm = ({ onSwitchToLogin }: ForgotPasswordFormProps)
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md mx-auto text-center"
+        className="w-full text-center"
       >
-        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-8 mb-6">
-          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 rounded-full w-fit mx-auto mb-4">
-            <CheckCircle className="h-8 w-8 text-white" />
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 mb-4">
+          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-3 rounded-full w-fit mx-auto mb-3">
+            <CheckCircle className="h-6 w-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-4">Check Your Email</h2>
-          <p className="text-gray-300 mb-6">
+          <h2 className="text-xl font-bold text-white mb-3">Check Your Email</h2>
+          <p className="text-gray-300 mb-4 text-sm">
             We've sent a password reset link to <span className="text-emerald-400 font-medium">{email}</span>
           </p>
-          <p className="text-sm text-gray-400">
+          <p className="text-xs text-gray-400">
             Didn't receive the email? Check your spam folder or try again in a few minutes.
           </p>
         </div>
@@ -83,22 +83,22 @@ export const ForgotPasswordForm = ({ onSwitchToLogin }: ForgotPasswordFormProps)
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="w-full max-w-md mx-auto"
+      className="w-full"
     >
-      <div className="text-center mb-8">
-        <div className="flex items-center justify-center space-x-2 mb-4">
+      <div className="text-center mb-6">
+        <div className="flex items-center justify-center space-x-2 mb-3">
           <div className="bg-gradient-to-r from-emerald-400 to-teal-500 p-2 rounded-lg">
-            <Leaf className="h-6 w-6 text-white" />
+            <Leaf className="h-5 w-5 text-white" />
           </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
+          <span className="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">
             AgriLens
           </span>
         </div>
-        <h2 className="text-3xl font-bold text-white mb-2">Reset Password</h2>
-        <p className="text-gray-400">Enter your email to receive a password reset link</p>
+        <h2 className="text-2xl font-bold text-white mb-2">Reset Password</h2>
+        <p className="text-gray-400 text-sm">Enter your email to receive a password reset link</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
             Email Address
@@ -115,7 +115,7 @@ export const ForgotPasswordForm = ({ onSwitchToLogin }: ForgotPasswordFormProps)
                 setEmail(e.target.value)
                 setError("")
               }}
-              className={`w-full pl-10 pr-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+              className={`w-full pl-10 pr-4 py-2.5 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
                 error ? "border-red-500" : "border-gray-600"
               }`}
               placeholder="Enter your email address"
@@ -135,7 +135,7 @@ export const ForgotPasswordForm = ({ onSwitchToLogin }: ForgotPasswordFormProps)
         <motion.button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-3 rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+          className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 text-white py-2.5 rounded-lg font-semibold hover:from-emerald-600 hover:to-teal-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           whileHover={{ scale: isLoading ? 1 : 1.02 }}
           whileTap={{ scale: isLoading ? 1 : 0.98 }}
         >
