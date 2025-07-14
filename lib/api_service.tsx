@@ -1,12 +1,9 @@
 // lib/api.ts
 import axios, { AxiosResponse } from 'axios'
-import dotenv from 'dotenv'
 
-// Load environment variables from .env file
-dotenv.config()
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.124.157:4000'
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://54.162.85.230'
 
 // Types
 export interface User {
