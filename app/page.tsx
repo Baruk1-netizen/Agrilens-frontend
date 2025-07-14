@@ -3,11 +3,11 @@
 import Footer from "@/components/Footer"
 import HeroSection from "@/components/HeroSection"
 import { NavBar } from "@/components/NavBar"
-import type React from "react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { motion } from "framer-motion"
-import { Upload, Camera, CheckCircle, Microscope, Sun, Droplets, BarChart3, Users, Shield, Star } from "lucide-react"
+import { Upload, Camera, CheckCircle, Microscope, Sun, Droplets, BarChart3, Users, Shield, Star, AlertCircle, Loader2 } from "lucide-react"
 import AIRecommendations from "@/components/Ai/ai-recommendations"
+import { apiService, validateImageFile, handleApiError, type Diagnosis } from "@/lib/api_service"
 
 // Internal Features Section (not exported)
 const FeaturesSection = () => {
@@ -166,10 +166,20 @@ const HowItWorksSection = () => {
   )
 }
 
-// Internal Upload Section (not exported)
+// Internal Upload Section (not exported) - Modified to work with backend
 const UploadSection = () => {
   const [dragActive, setDragActive] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [diagnosis, setDiagnosis] = useState<Diagnosis | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  // Check authentication on component mount
+  React.useEffect(() => {
+    setIsAuthenticated(apiService.isAuthenticated())
+  }, [])
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -188,23 +198,68 @@ const UploadSection = () => {
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0]
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+      processFile(file)
     }
   }
 
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0]
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setUploadedImage(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+      processFile(file)
     }
+  }
+
+  const processFile = (file: File) => {
+    // Validate file
+    const validation = validateImageFile(file)
+    if (!validation.isValid) {
+      setError(validation.error || "Invalid file")
+      return
+    }
+
+    // Clear previous error
+    setError(null)
+
+    // Set file and create preview
+    setSelectedFile(file)
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      setUploadedImage(e.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleDiagnose = async () => {
+    if (!selectedFile) return
+    
+    if (!isAuthenticated) {
+      setError("Please log in to analyze your plant images")
+      return
+    }
+
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      const result = await apiService.diagnosePlant(selectedFile)
+      setDiagnosis(result)
+    } catch (err) {
+      const errorMessage = handleApiError(err)
+      setError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const resetUpload = () => {
+    setUploadedImage(null)
+    setSelectedFile(null)
+    setDiagnosis(null)
+    setError(null)
+  }
+
+  const formatConfidenceScore = (score: number) => {
+    return `${(score * 100).toFixed(1)}%`
   }
 
   return (
@@ -214,6 +269,21 @@ const UploadSection = () => {
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">Upload Your Crop Image</h2>
           <p className="text-xl text-gray-300">Get instant disease detection and treatment recommendations</p>
         </motion.div>
+
+        {/* Authentication Warning */}
+        {!isAuthenticated && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 flex items-center space-x-4"
+          >
+            <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0" />
+            <div>
+              <h3 className="text-amber-400 font-semibold mb-2">Authentication Required</h3>
+              <p className="text-gray-300">Please log in to your account to analyze plant images and get personalized recommendations.</p>
+            </div>
+          </motion.div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
@@ -229,10 +299,19 @@ const UploadSection = () => {
             backgroundColor: dragActive ? "rgba(16, 185, 129, 0.1)" : undefined,
           }}
         >
-          {uploadedImage ? (
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-center space-x-2">
+              <AlertCircle className="h-5 w-5 text-red-400" />
+              <span className="text-red-400">{error}</span>
+            </div>
+          )}
+
+          {uploadedImage && diagnosis ? (
+            /* Diagnosis Results */
             <div className="space-y-6">
               <img
-                src={uploadedImage || "/placeholder.svg"}
+                src={uploadedImage}
                 alt="Uploaded crop"
                 className="max-w-md mx-auto rounded-2xl shadow-2xl"
               />
@@ -241,27 +320,101 @@ const UploadSection = () => {
                   <CheckCircle className="h-6 w-6 text-emerald-400" />
                   <span className="text-emerald-400 font-semibold">Analysis Complete</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Healthy Tomato Plant</h3>
-                <p className="text-gray-300 mb-4">No diseases detected. Your crop appears healthy!</p>
+                
+                <h3 className="text-2xl font-semibold text-white mb-2">{diagnosis.disease}</h3>
+                
+                {diagnosis.symptoms.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-emerald-400 font-semibold mb-2">Symptoms Detected:</h4>
+                    <ul className="text-gray-300 text-sm space-y-1">
+                      {diagnosis.symptoms.map((symptom, index) => (
+                        <li key={index}>• {symptom}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {diagnosis.cropsAffected.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-emerald-400 font-semibold mb-2">Crops Affected:</h4>
+                    <p className="text-gray-300 text-sm">{diagnosis.cropsAffected.join(", ")}</p>
+                  </div>
+                )}
+
+                {diagnosis.affectedAreas.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-emerald-400 font-semibold mb-2">Affected Areas:</h4>
+                    <p className="text-gray-300 text-sm">{diagnosis.affectedAreas.join(", ")}</p>
+                  </div>
+                )}
+
+                <div className="mb-4">
+                  <h4 className="text-emerald-400 font-semibold mb-2">Recommended Action:</h4>
+                  <p className="text-gray-300 text-sm">{diagnosis.recommendedAction}</p>
+                </div>
+
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div className="bg-slate-700/50 rounded-lg p-3">
                     <div className="text-emerald-400 font-semibold">Confidence</div>
-                    <div className="text-white">98.5%</div>
+                    <div className="text-white">{formatConfidenceScore(diagnosis.confidenceScore)}</div>
                   </div>
                   <div className="bg-slate-700/50 rounded-lg p-3">
-                    <div className="text-emerald-400 font-semibold">Processing Time</div>
-                    <div className="text-white">2.3s</div>
+                    <div className="text-emerald-400 font-semibold">Analyzed</div>
+                    <div className="text-white">{new Date(diagnosis.createdAt).toLocaleDateString()}</div>
                   </div>
                 </div>
               </div>
+              
               <button
-                onClick={() => setUploadedImage(null)}
+                onClick={resetUpload}
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all duration-200"
               >
                 Upload Another Image
               </button>
             </div>
+          ) : uploadedImage && selectedFile ? (
+            /* Image uploaded, ready for diagnosis */
+            <div className="space-y-6">
+              <img
+                src={uploadedImage}
+                alt="Uploaded crop"
+                className="max-w-md mx-auto rounded-2xl shadow-2xl"
+              />
+              
+              <div className="bg-slate-700/50 border border-slate-600/50 rounded-2xl p-6">
+                <h3 className="text-xl font-semibold text-white mb-2">Image Ready for Analysis</h3>
+                <p className="text-gray-300 mb-4">Click the button below to analyze your plant image</p>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button
+                    onClick={handleDiagnose}
+                    disabled={isLoading || !isAuthenticated}
+                    className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        <span>Analyzing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Microscope className="h-5 w-5" />
+                        <span>Analyze Plant</span>
+                      </>
+                    )}
+                  </button>
+                  
+                  <button
+                    onClick={resetUpload}
+                    className="border-2 border-emerald-500 text-emerald-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-500 hover:text-white transition-all duration-200"
+                  >
+                    Choose Different Image
+                  </button>
+                </div>
+              </div>
+            </div>
           ) : (
+            /* Upload interface */
             <div className="space-y-6">
               <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 rounded-full w-fit mx-auto">
                 <Upload className="h-12 w-12 text-white" />
@@ -276,7 +429,12 @@ const UploadSection = () => {
                 <label className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 cursor-pointer flex items-center space-x-2">
                   <Upload className="h-5 w-5" />
                   <span>Choose File</span>
-                  <input type="file" accept="image/*" onChange={handleFileInput} className="hidden" />
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleFileInput} 
+                    className="hidden" 
+                  />
                 </label>
 
                 <button className="border-2 border-emerald-500 text-emerald-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-500 hover:text-white transition-all duration-200 flex items-center space-x-2">
@@ -314,7 +472,7 @@ const TestimonialsSection = () => {
     {
       name: "Dr. Emily Chen",
       role: "Plant Pathologist",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90ly1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       content:
         "As a researcher, I'm impressed by the AI model's precision. It's a game-changer for sustainable agriculture.",
       rating: 5,

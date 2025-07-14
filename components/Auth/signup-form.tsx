@@ -1,18 +1,19 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { motion } from "framer-motion"
-import { Eye, EyeOff, Mail, Lock, User, Leaf } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react"
 import Image from "next/image"
+import { apiService, handleApiError } from "@/lib/api_service"
 
 interface SignupFormProps {
   onSwitchToLogin: () => void
   onClose?: () => void
+  onSuccess?: (user: any) => void
 }
 
-export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
+export const SignupForm = ({ onSwitchToLogin, onClose, onSuccess }: SignupFormProps) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -25,6 +26,7 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target
@@ -35,6 +37,10 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+    // Clear API error when user starts typing
+    if (apiError) {
+      setApiError(null)
     }
   }
 
@@ -83,15 +89,28 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
     if (!validateForm()) return
 
     setIsLoading(true)
+    setApiError(null)
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      console.log("Signup successful:", formData)
-      // Handle successful signup here
+      const response = await apiService.signup({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      })
+
+      console.log("Signup successful:", response)
+      
+      // Call success callback if provided
+      if (onSuccess) {
+        onSuccess(response.user)
+      }
+      
+      // Close modal or redirect
       onClose?.()
     } catch (error) {
       console.error("Signup failed:", error)
+      setApiError(handleApiError(error))
     } finally {
       setIsLoading(false)
     }
@@ -106,22 +125,32 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
     >
       <div className="text-center mb-8">
         <div className="flex items-center justify-center space-x-2 mb-4">
-
-                    {/* Logo */}
+          {/* Logo */}
           <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
-           <Image
-                src="/assets/logo.png"
-                alt="AgriLens Logo"
-                width={120}
-                height={70}
-                className=""
-                />
+            <Image
+              src="/assets/logo.png"
+              alt="AgriLens Logo"
+              width={120}
+              height={70}
+              className=""
+            />
           </motion.div>
-
         </div>
         <h2 className="text-xl font-bold text-white">Create Account</h2>
         <p className="text-gray-400">Join AgriLens to start detecting crop diseases</p>
       </div>
+
+      {/* API Error Display */}
+      {apiError && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-4 p-4 bg-red-500/10 border border-red-500/20 rounded-lg flex items-center space-x-2"
+        >
+          <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0" />
+          <span className="text-red-400 text-sm">{apiError}</span>
+        </motion.div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-2">
         {/* Name Fields */}
@@ -140,7 +169,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleInputChange}
-                className={`w-full pl-10 pr-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+                disabled={isLoading}
+                className={`w-full pl-10 pr-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                   errors.firstName ? "border-red-500" : "border-gray-600"
                 }`}
                 placeholder="First name"
@@ -167,7 +197,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               name="lastName"
               value={formData.lastName}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+              disabled={isLoading}
+              className={`w-full px-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                 errors.lastName ? "border-red-500" : "border-gray-600"
               }`}
               placeholder="Last name"
@@ -199,7 +230,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+              disabled={isLoading}
+              className={`w-full pl-10 pr-4 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                 errors.email ? "border-red-500" : "border-gray-600"
               }`}
               placeholder="Enter your email"
@@ -231,7 +263,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-12 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+              disabled={isLoading}
+              className={`w-full pl-10 pr-12 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                 errors.password ? "border-red-500" : "border-gray-600"
               }`}
               placeholder="Create a password"
@@ -239,7 +272,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-300"
+              disabled={isLoading}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-300 disabled:opacity-50"
             >
               {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -270,7 +304,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className={`w-full pl-10 pr-12 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+              disabled={isLoading}
+              className={`w-full pl-10 pr-12 py-3 bg-slate-800 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${
                 errors.confirmPassword ? "border-red-500" : "border-gray-600"
               }`}
               placeholder="Confirm your password"
@@ -278,7 +313,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
             <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-300"
+              disabled={isLoading}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-300 disabled:opacity-50"
             >
               {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
             </button>
@@ -302,7 +338,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
               name="agreeToTerms"
               checked={formData.agreeToTerms}
               onChange={handleInputChange}
-              className="mt-1 w-4 h-4 text-emerald-600 bg-slate-800 border-gray-600 rounded focus:ring-emerald-500 focus:ring-2"
+              disabled={isLoading}
+              className="mt-1 w-4 h-4 text-emerald-600 bg-slate-800 border-gray-600 rounded focus:ring-emerald-500 focus:ring-2 disabled:opacity-50"
             />
             <span className="text-sm text-gray-300">
               I agree to the{" "}
@@ -351,7 +388,8 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
           Already have an account?{" "}
           <button
             onClick={onSwitchToLogin}
-            className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-200"
+            disabled={isLoading}
+            className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-200 disabled:opacity-50"
           >
             Sign in here
           </button>
@@ -360,4 +398,5 @@ export const SignupForm = ({ onSwitchToLogin, onClose }: SignupFormProps) => {
     </motion.div>
   )
 }
+
 export default SignupForm
