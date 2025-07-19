@@ -110,7 +110,7 @@ export const SignupForm = ({ onSwitchToLogin, onClose, onSuccess }: SignupFormPr
       onClose?.()
     } catch (error) {
       console.error("Signup failed:", error)
-      setApiError(handleApiError(error))
+      setApiError("Failed to create account. Please try again.")
     } finally {
       setIsLoading(false)
     }

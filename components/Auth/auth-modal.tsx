@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X } from "lucide-react"
 import { LoginForm } from "./login-form"
 import { SignupForm } from "./signup-form"
-import { ForgotPasswordForm } from "./forgot-password-form"
+
 
 type AuthView = "login" | "signup" | "forgot-password"
 
@@ -65,9 +65,7 @@ className="bg-slate-900 border border-emerald-500/20 md:h-[600px] sm:h-[550px] r
                 {currentView === "signup" && (
                   <SignupForm key="signup" onSwitchToLogin={() => setCurrentView("login")} onClose={handleClose} />
                 )}
-                {currentView === "forgot-password" && (
-                  <ForgotPasswordForm key="forgot-password" onSwitchToLogin={() => setCurrentView("login")} />
-                )}
+
               </AnimatePresence>
             </motion.div>
           </motion.div>

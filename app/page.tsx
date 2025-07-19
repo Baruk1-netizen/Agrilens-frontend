@@ -5,7 +5,7 @@ import HeroSection from "@/components/HeroSection"
 import { NavBar } from "@/components/NavBar"
 import React, { useState } from "react"
 import { motion } from "framer-motion"
-import { Upload, Camera, CheckCircle, Microscope, Sun, Droplets, BarChart3, Users, Shield, Star, AlertCircle, Loader2 } from "lucide-react"
+import { Upload, Camera, CheckCircle, Microscope, MessageCircle, Droplets, BarChart3, Users, Shield, Star, AlertCircle, Loader2 } from "lucide-react"
 import AIRecommendations from "@/components/Ai/ai-recommendations"
 import { apiService, validateImageFile, handleApiError, type Diagnosis } from "@/lib/api_service"
 
@@ -23,9 +23,9 @@ const FeaturesSection = () => {
       description: "Simply take a photo with your phone or upload from your gallery for instant analysis",
     },
     {
-      icon: Sun,
-      title: "Weather Integration",
-      description: "Get weather-based recommendations to prevent future disease outbreaks",
+      icon: MessageCircle,
+      title: "Chat with AI",
+      description: "Get AI-powered responses to your farming questions and concerns about the diseases",
     },
     {
       icon: Droplets,
@@ -91,12 +91,45 @@ const FeaturesSection = () => {
 
 // Internal How It Works Section (not exported)
 const HowItWorksSection = () => {
+  const scrollToUpload = () => {
+    console.log('Scroll function called') // Debug log
+    
+    // Try to find the upload section first
+    let targetElement = document.getElementById('upload')
+    
+    // If not found, try the upload text div
+    if (!targetElement) {
+      targetElement = document.getElementById('upload-text')
+    }
+    
+    console.log('Target element found:', targetElement) // Debug log
+    
+    if (targetElement) {
+      // Calculate offset for any fixed headers (like navbar)
+      const yOffset = -80 // Adjust this value based on your navbar height
+      const y = targetElement.getBoundingClientRect().top + window.pageYOffset + yOffset
+      
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      })
+    } else {
+      console.error('Upload section not found!')
+      // Fallback: scroll to bottom of page
+      window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: 'smooth'
+      })
+    }
+  }
+
   const steps = [
     {
       step: "01",
       title: "Upload Image",
       description: "Take a photo of your crop or upload an existing image from your device",
       icon: Upload,
+      onClick: scrollToUpload,
     },
     {
       step: "02",
@@ -139,7 +172,8 @@ const HowItWorksSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.2 }}
-              className="text-center relative"
+              className={`text-center relative ${step.onClick ? 'cursor-pointer group' : ''}`}
+              onClick={step.onClick}
             >
               {/* Connection Line */}
               {index < steps.length - 1 && (
@@ -147,7 +181,7 @@ const HowItWorksSection = () => {
               )}
 
               <div className="relative z-10">
-                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-6 rounded-full w-fit mx-auto mb-6">
+                <div className={`bg-gradient-to-r from-emerald-500 to-teal-600 p-6 rounded-full w-fit mx-auto mb-6 transition-transform duration-200 ${step.onClick ? 'group-hover:scale-110' : ''}`}>
                   <step.icon className="h-8 w-8 text-white" />
                 </div>
 
@@ -155,8 +189,13 @@ const HowItWorksSection = () => {
                   <span className="text-emerald-400 font-bold text-lg">{step.step}</span>
                 </div>
 
-                <h3 className="text-xl font-semibold text-white mb-4">{step.title}</h3>
+                <h3 className={`text-xl font-semibold text-white mb-4 ${step.onClick ? 'group-hover:text-emerald-400 transition-colors duration-200' : ''}`}>{step.title}</h3>
                 <p className="text-gray-300">{step.description}</p>
+                {step.onClick && (
+                  <div className="mt-2 text-emerald-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    Click to get started →
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
@@ -420,7 +459,7 @@ const UploadSection = () => {
                 <Upload className="h-12 w-12 text-white" />
               </div>
 
-              <div>
+              <div id="upload-text">
                 <h3 className="text-2xl font-semibold text-white mb-4">Drop your image here or click to browse</h3>
                 <p className="text-gray-300 mb-6">Supports JPG, PNG, and WEBP files up to 10MB</p>
               </div>

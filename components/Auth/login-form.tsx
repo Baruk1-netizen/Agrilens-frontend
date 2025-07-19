@@ -6,16 +6,14 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, Leaf } from "lucide-react"
 import Image from "next/image"
-import { apiService, handleApiError } from "@/lib/api_service"
 
 interface LoginFormProps {
   onSwitchToSignup: () => void
   onSwitchToForgotPassword: () => void
   onClose?: () => void
-  onLoginSuccess?: () => void
 }
 
-export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose, onLoginSuccess }: LoginFormProps) => {
+export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose }: LoginFormProps) => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -23,7 +21,6 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
-  const [apiError, setApiError] = useState<string | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -31,10 +28,6 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
-    }
-    // Clear API error when user starts typing
-    if (apiError) {
-      setApiError(null)
     }
   }
 
@@ -63,24 +56,15 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
     if (!validateForm()) return
 
     setIsLoading(true)
-    setApiError(null)
 
+    // Simulate API call
     try {
-      const response = await apiService.login({
-        email: formData.email,
-        password: formData.password,
-      })
-
-      console.log("Login successful:", response)
-      
-      // Call success callbacks
-      onLoginSuccess?.()
+      await new Promise((resolve) => setTimeout(resolve, 2000))
+      console.log("Login successful:", formData)
+      // Handle successful login here
       onClose?.()
-      
     } catch (error) {
       console.error("Login failed:", error)
-      const errorMessage = handleApiError(error)
-      setApiError(errorMessage)
     } finally {
       setIsLoading(false)
     }
@@ -95,7 +79,8 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
     >
       <div className="text-center mb-8">
         <div className="flex items-center justify-center space-x-2 mb-4">
-          {/* Logo */}
+
+                    {/* Logo */}
           <motion.div className="flex items-center space-x-2" whileHover={{ scale: 1.05 }}>
            <Image
                 src="/assets/logo.png"
@@ -105,23 +90,13 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
                 className=""
                 />
           </motion.div>
+
         </div>
         <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
         <p className="text-gray-400">Sign in to your account to continue</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* API Error Display */}
-        {apiError && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-red-900/20 border border-red-500 rounded-lg p-3 mb-4"
-          >
-            <p className="text-red-400 text-sm">{apiError}</p>
-          </motion.div>
-        )}
-
         {/* Email Field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
@@ -193,17 +168,6 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
           )}
         </div>
 
-        {/* Forgot Password Link */}
-        <div className="text-right">
-          <button
-            type="button"
-            onClick={onSwitchToForgotPassword}
-            className="text-emerald-400 hover:text-emerald-300 text-sm transition-colors duration-200"
-          >
-            Forgot your password?
-          </button>
-        </div>
-
         {/* Submit Button */}
         <motion.button
           type="submit"
@@ -238,5 +202,4 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose,
     </motion.div>
   )
 }
-
 export default LoginForm

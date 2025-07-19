@@ -1,3 +1,4 @@
+/*
 "use client"
 
 import type React from "react"
@@ -163,3 +164,4 @@ export const ForgotPasswordForm = ({ onSwitchToLogin }: ForgotPasswordFormProps)
   )
 }
 export default ForgotPasswordForm
+*/

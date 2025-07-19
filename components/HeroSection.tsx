@@ -4,6 +4,52 @@ import { motion } from "framer-motion"
 import { Upload, ArrowRight, Sprout, Zap, Shield, BarChart3 } from "lucide-react"
 
 export const HeroSection = () => {
+  const scrollToUpload = () => {
+    console.log('HeroSection: Attempting to scroll to upload area');
+    
+    // Try multiple selectors for robustness
+    const selectors = ['#upload', '#upload-text', '[data-upload-area]'];
+    
+    for (const selector of selectors) {
+      const element = document.querySelector(selector);
+      if (element) {
+        console.log(`HeroSection: Found element with selector: ${selector}`);
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'center'
+        });
+        return;
+      }
+    }
+    
+    console.log('HeroSection: No upload element found, trying fallback');
+    // Fallback: scroll to a reasonable position
+    window.scrollTo({
+      top: window.innerHeight * 1.5,
+      behavior: 'smooth'
+    });
+  };
+
+  const scrollToHowItWorks = () => {
+    console.log('HeroSection: Attempting to scroll to how it works section');
+    
+    const element = document.getElementById('how-it-works');
+    if (element) {
+      console.log('HeroSection: Found how-it-works element');
+      element.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'center'
+      });
+    } else {
+      console.log('HeroSection: How It Works section not found, trying fallback');
+      // Fallback: scroll to a reasonable position
+      window.scrollTo({
+        top: window.innerHeight * 2,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/20 to-slate-900 pt-20 relative overflow-hidden">
       {/* Background Elements */}
@@ -66,6 +112,7 @@ export const HeroSection = () => {
                 className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center space-x-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={scrollToUpload}
               >
                 <Upload className="h-5 w-5" />
                 <span>Upload Image</span>
@@ -75,6 +122,7 @@ export const HeroSection = () => {
                 className="border-2 border-emerald-500 text-emerald-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-500 hover:text-white transition-all duration-200 flex items-center justify-center space-x-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={scrollToHowItWorks}
               >
                 <span>Learn More</span>
                 <ArrowRight className="h-5 w-5" />
