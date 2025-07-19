@@ -6,3 +6,8 @@ body {
   background-color: #f8fafc; /* Tailwind's bg-gray-100 */
   color: #1f2937; /* Tailwind's text-gray-800 */
 }
+
+/* Hide scrollbar for webkit browsers (Chrome, Safari, Edge) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
