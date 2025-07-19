@@ -33,7 +33,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-2"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9998] flex items-center justify-center p-1"
             onClick={handleClose}
           >
             {/* Modal - centered with equal margins all around */}
