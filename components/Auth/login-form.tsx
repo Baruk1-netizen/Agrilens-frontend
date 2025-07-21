@@ -6,6 +6,8 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, Leaf } from "lucide-react"
 import Image from "next/image"
+import { apiService, handleApiError } from "@/lib/api_service"
+
 
 // Google Icon component
 const GoogleIcon = () => (
@@ -32,6 +34,7 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose 
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -90,12 +93,13 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose 
 
     // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-      console.log("Login successful:", formData)
+      const response = await apiService.login(formData)
+      console.log("Login successful:", response)
       // Handle successful login here
       onClose?.()
     } catch (error) {
       console.error("Login failed:", error)
+      setApiError(handleApiError(error))
     } finally {
       setIsLoading(false)
     }
