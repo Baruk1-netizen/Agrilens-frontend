@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 
 
 // API Configuration
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://54.162.85.230'
+const API_BASE_URL = 'https://54.162.85.230'
 
 // Types
 export interface User {
