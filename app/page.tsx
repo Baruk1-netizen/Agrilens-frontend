@@ -352,7 +352,7 @@ const UploadSection = () => {
               <img
                 src={uploadedImage}
                 alt="Uploaded crop"
-                className="max-w-md mx-auto rounded-2xl shadow-2xl"
+                className="w-[200px] h-[200px] object-cover mx-auto rounded-2xl shadow-2xl"
               />
               <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6">
                 <div className="flex items-center justify-center space-x-2 mb-4">
@@ -417,7 +417,7 @@ const UploadSection = () => {
               <img
                 src={uploadedImage}
                 alt="Uploaded crop"
-                className="max-w-md mx-auto rounded-2xl shadow-2xl"
+                className="w-[200px] h-[200px] object-cover mx-auto rounded-2xl shadow-2xl"
               />
               
               <div className="bg-slate-700/50 border border-slate-600/50 rounded-2xl p-6">
