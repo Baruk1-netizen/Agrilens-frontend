@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from "lucide-react"
 import Image from "next/image"
 import { apiService, handleApiError } from "@/lib/api_service"
+import { googleAuth } from "@/lib/google-auth"
 
 // Google Icon component
 const GoogleIcon = () => (
@@ -130,19 +131,39 @@ export const SignupForm = ({ onSwitchToLogin, onClose, onSuccess }: SignupFormPr
   const handleGoogleSignup = async () => {
     setIsGoogleLoading(true)
     setApiError(null)
+    setErrors({})
+    
     try {
-      // TODO: Implement Google OAuth signup
-      // This would typically involve redirecting to Google OAuth or using a popup
-      console.log("Google signup initiated")
+      // Initialize Google auth if needed
+      await googleAuth.initialize()
       
-      // Simulated Google signup - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Show Google account selection modal and get credential token
+      const googleToken: string = await googleAuth.signInWithPopup()
       
-      // On successful signup, close the modal
+      // Send to backend for signup
+      const response = await apiService.signupWithGoogle(googleToken)
+      
+      console.log("Google signup successful:", response)
+      
+      // Handle successful signup
+      if (onSuccess) {
+        onSuccess(response.user)
+      }
       onClose?.()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google signup failed:", error)
-      setApiError("Google signup failed. Please try again.")
+      
+      if (error.message === 'User cancelled Google sign-in') {
+        // User cancelled the account selection modal, don't show error
+        return
+      }
+      
+      // Check if it's a "user already exists" error, suggest login
+      if (error.response?.status === 409 || error.message.includes('already exists')) {
+        setApiError("Account already exists with this Google account. Please try logging in instead.")
+      } else {
+        setApiError(handleApiError(error))
+      }
     } finally {
       setIsGoogleLoading(false)
     }

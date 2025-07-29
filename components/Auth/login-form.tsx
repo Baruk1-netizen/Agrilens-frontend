@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 import { Eye, EyeOff, Mail, Lock, Leaf } from "lucide-react"
 import Image from "next/image"
 import { apiService, handleApiError } from "@/lib/api_service"
+import { googleAuth } from "@/lib/google-auth"
 
 
 // Google Icon component
@@ -66,19 +67,36 @@ export const LoginForm = ({ onSwitchToSignup, onSwitchToForgotPassword, onClose 
 
   const handleGoogleLogin = async () => {
     setIsGoogleLoading(true)
+    setErrors({})
+    setApiError(null)
+    
     try {
-      // TODO: Implement Google OAuth login
-      // This would typically involve redirecting to Google OAuth or using a popup
-      console.log("Google login initiated")
+      // Initialize Google auth if needed
+      await googleAuth.initialize()
       
-      // Simulated Google login - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Show Google account selection modal and get credential token
+      const googleToken: string = await googleAuth.signInWithPopup()
       
-      // On successful login, close the modal
+      // Send to backend for authentication
+      const response = await apiService.loginWithGoogle(googleToken)
+      
+      console.log("Google login successful:", response)
+      // Handle successful login
       onClose?.()
-    } catch (error) {
+    } catch (error: any) {
       console.error("Google login failed:", error)
-      setErrors({ google: "Google login failed. Please try again." })
+      
+      if (error.message === 'User cancelled Google sign-in') {
+        // User cancelled the account selection modal, don't show error
+        return
+      }
+      
+      // Check if it's a "user not found" error, suggest signup
+      if (error.response?.status === 404 || error.message.includes('not found')) {
+        setErrors({ google: "Account not found. Please sign up with Google first." })
+      } else {
+        setErrors({ google: handleApiError(error) })
+      }
     } finally {
       setIsGoogleLoading(false)
     }
