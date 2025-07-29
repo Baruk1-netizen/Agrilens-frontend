@@ -214,11 +214,84 @@ const UploadSection = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showCamera, setShowCamera] = useState(false)
+  const [stream, setStream] = useState<MediaStream | null>(null)
+  const videoRef = React.useRef<HTMLVideoElement>(null)
+  const canvasRef = React.useRef<HTMLCanvasElement>(null)
 
   // Check authentication on component mount
   React.useEffect(() => {
     setIsAuthenticated(apiService.isAuthenticated())
   }, [])
+
+  // Cleanup camera stream on component unmount
+  React.useEffect(() => {
+    return () => {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop())
+      }
+    }
+  }, [stream])
+
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({ 
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'environment' // Use back camera on mobile devices
+        } 
+      })
+      setStream(mediaStream)
+      setShowCamera(true)
+      setError(null)
+      
+      // Set video stream after a small delay to ensure the video element is rendered
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream
+          videoRef.current.play().catch(console.error)
+        }
+      }, 100)
+    } catch (err) {
+      console.error('Error accessing camera:', err)
+      setError('Unable to access camera. Please ensure camera permissions are granted.')
+    }
+  }
+
+  const stopCamera = () => {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop())
+      setStream(null)
+    }
+    setShowCamera(false)
+  }
+
+  const capturePhoto = () => {
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current
+      const canvas = canvasRef.current
+      const context = canvas.getContext('2d')
+      
+      if (context) {
+        // Set canvas dimensions to match video
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+        
+        // Draw video frame to canvas
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+        
+        // Convert canvas to blob and create file
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const file = new File([blob], `camera-capture-${Date.now()}.jpg`, { type: 'image/jpeg' })
+            processFile(file)
+            stopCamera()
+          }
+        }, 'image/jpeg', 0.9)
+      }
+    }
+  }
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault()
@@ -295,6 +368,7 @@ const UploadSection = () => {
     setSelectedFile(null)
     setDiagnosis(null)
     setError(null)
+    stopCamera() // Also stop camera if active
   }
 
   const formatConfidenceScore = (score: number) => {
@@ -346,7 +420,47 @@ const UploadSection = () => {
             </div>
           )}
 
-          {uploadedImage && diagnosis ? (
+          {showCamera ? (
+            /* Camera Interface */
+            <div className="space-y-6">
+              <div className="relative">
+                <video
+                  ref={videoRef}
+                  autoPlay
+                  playsInline
+                  muted
+                  className="w-full max-w-md mx-auto rounded-2xl shadow-2xl bg-black"
+                  onLoadedMetadata={() => {
+                    // Ensure video plays when metadata is loaded
+                    if (videoRef.current) {
+                      videoRef.current.play().catch(console.error)
+                    }
+                  }}
+                />
+                <canvas
+                  ref={canvasRef}
+                  className="hidden"
+                />
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button
+                  onClick={capturePhoto}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-teal-700 transition-all duration-200 flex items-center justify-center space-x-2"
+                >
+                  <Camera className="h-5 w-5" />
+                  <span>Capture Photo</span>
+                </button>
+                
+                <button
+                  onClick={stopCamera}
+                  className="border-2 border-red-500 text-red-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-red-500 hover:text-white transition-all duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : uploadedImage && diagnosis ? (
             /* Diagnosis Results */
             <div className="space-y-6">
               <img
@@ -476,7 +590,7 @@ const UploadSection = () => {
                   />
                 </label>
 
-                <button className="border-2 border-emerald-500 text-emerald-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-500 hover:text-white transition-all duration-200 flex items-center space-x-2">
+                <button className="border-2 border-emerald-500 text-emerald-400 px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-500 hover:text-white transition-all duration-200 flex items-center space-x-2" onClick={startCamera}>
                   <Camera className="h-5 w-5" />
                   <span>Take Photo</span>
                 </button>
