@@ -1,9 +1,9 @@
 // lib/api.ts
 import axios, { AxiosResponse } from 'axios'
-
+import { io, Socket } from 'socket.io-client'
 
 // API Configuration
-const API_BASE_URL = 'https://agrilens-api-backend.onrender.com'
+const API_BASE_URL = process.env.API_BASE_URL || 'https://agrilens-api-backend.onrender.com/'
 
 // Types
 export interface User {
@@ -43,6 +43,21 @@ export interface Diagnosis {
   createdAt: string
 }
 
+// WebSocket Chat Types
+export interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+}
+
+export interface ChatSession {
+  sessionId: string
+  createdAt: string
+  lastActivity: string
+  messageCount: number
+  lastMessage: string
+}
+
 export interface ApiError {
   error: string
 }
@@ -50,6 +65,7 @@ export interface ApiError {
 // API Service Class
 class AgriLensAPI {
   private token: string | null = null
+  private socket: Socket | null = null
   private axiosInstance = axios.create({
     baseURL: API_BASE_URL,
     timeout: 30000, // 30 seconds timeout
@@ -105,6 +121,7 @@ class AgriLensAPI {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('agrilens_token')
       localStorage.removeItem('agrilens_user')
+      this.disconnectChat()
       window.location.reload()
     }
   }
@@ -189,6 +206,129 @@ class AgriLensAPI {
     return response.data
   }
 
+  // WebSocket Chat Methods
+  connectChat(): Promise<Socket> {
+    return new Promise((resolve, reject) => {
+      if (!this.token) {
+        reject(new Error('No authentication token available'))
+        return
+      }
+
+      if (this.socket && this.socket.connected) {
+        resolve(this.socket)
+        return
+      }
+
+      this.socket = io(API_BASE_URL, {
+        auth: {
+          token: this.token
+        },
+        transports: ['websocket', 'polling']
+      })
+
+      this.socket.on('connect', () => {
+        console.log('Connected to chat server')
+        resolve(this.socket!)
+      })
+
+      this.socket.on('connect_error', (error) => {
+        console.error('Chat connection error:', error)
+        reject(error)
+      })
+
+      this.socket.on('disconnect', () => {
+        console.log('Disconnected from chat server')
+      })
+    })
+  }
+
+  disconnectChat() {
+    if (this.socket) {
+      this.socket.disconnect()
+      this.socket = null
+    }
+  }
+
+  async startChatSession(): Promise<{ sessionId: string; message: string }> {
+    const socket = await this.connectChat()
+    
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Timeout waiting for chat session start'))
+      }, 10000)
+
+      socket.once('chat_started', (data) => {
+        clearTimeout(timeout)
+        resolve(data)
+      })
+
+      socket.once('error', (error) => {
+        clearTimeout(timeout)
+        reject(error)
+      })
+
+      socket.emit('start_chat')
+    })
+  }
+
+  async sendChatMessage(sessionId: string, message: string): Promise<void> {
+    const socket = await this.connectChat()
+    socket.emit('chat_message', { sessionId, message })
+  }
+
+  // Event listeners for chat
+  onMessageReceived(callback: (message: ChatMessage) => void): () => void {
+    if (!this.socket) return () => {}
+
+    const messageHandler = (data: any) => {
+      callback({
+        role: data.role,
+        content: data.content,
+        timestamp: new Date(data.timestamp)
+      })
+    }
+
+    this.socket.on('message_received', messageHandler)
+    return () => this.socket?.off('message_received', messageHandler)
+  }
+
+  onAIResponse(callback: (message: ChatMessage) => void): () => void {
+    if (!this.socket) return () => {}
+
+    const responseHandler = (data: any) => {
+      callback({
+        role: data.role,
+        content: data.content,
+        timestamp: new Date(data.timestamp)
+      })
+    }
+
+    this.socket.on('ai_response', responseHandler)
+    return () => this.socket?.off('ai_response', responseHandler)
+  }
+
+  onChatError(callback: (error: { message: string }) => void): () => void {
+    if (!this.socket) return () => {}
+
+    this.socket.on('error', callback)
+    return () => this.socket?.off('error', callback)
+  }
+
+  async getChatSessions(): Promise<ChatSession[]> {
+    const response: AxiosResponse<ChatSession[]> = await this.axiosInstance.get('/chat/sessions')
+    return response.data
+  }
+
+  async getChatHistory(sessionId: string): Promise<{ sessionId: string; messages: ChatMessage[] }> {
+    const response = await this.axiosInstance.get(`/chat/sessions/${sessionId}`)
+    return response.data
+  }
+
+  async endChatSession(sessionId: string): Promise<void> {
+    const socket = await this.connectChat()
+    socket.emit('end_chat', { sessionId })
+  }
+
   // Utility methods
   isAuthenticated(): boolean {
     return !!this.token
@@ -227,6 +367,103 @@ export const useApiError = () => {
   }
 
   return { error, clearError, handleError }
+}
+
+// Chat Hook for managing chat state
+export const useChat = () => {
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [isConnected, setIsConnected] = useState(false)
+  const [isTyping, setIsTyping] = useState(false)
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  const startChat = async () => {
+    try {
+      setError(null)
+      const { sessionId, message } = await apiService.startChatSession()
+      setCurrentSessionId(sessionId)
+      setMessages([{
+        role: 'assistant',
+        content: message,
+        timestamp: new Date()
+      }])
+      setIsConnected(true)
+
+      // Set up event listeners
+      const cleanupMessageReceived = apiService.onMessageReceived((message) => {
+        setMessages(prev => [...prev, message])
+      })
+
+      const cleanupAIResponse = apiService.onAIResponse((message) => {
+        setMessages(prev => [...prev, message])
+        setIsTyping(false)
+      })
+
+      const cleanupError = apiService.onChatError((error) => {
+        setError(error.message)
+        setIsTyping(false)
+      })
+
+      // Return cleanup function
+      return () => {
+        cleanupMessageReceived()
+        cleanupAIResponse()
+        cleanupError()
+      }
+    } catch (error) {
+      setError(handleApiError(error))
+      setIsConnected(false)
+    }
+  }
+
+  const sendMessage = async (message: string) => {
+    if (!currentSessionId || !message.trim()) return
+
+    try {
+      setError(null)
+      setIsTyping(true)
+      
+      // Add user message immediately to UI
+      // const userMessage: ChatMessage = {
+      //   role: 'user',
+      //   content: message,
+      //   timestamp: new Date()
+      // }
+      // setMessages(prev => [...prev, userMessage])
+
+      await apiService.sendChatMessage(currentSessionId, message)
+    } catch (error) {
+      setError(handleApiError(error))
+      setIsTyping(false)
+    }
+  }
+
+  const endChat = async () => {
+    if (!currentSessionId) return
+
+    try {
+      await apiService.endChatSession(currentSessionId)
+      setCurrentSessionId(null)
+      setIsConnected(false)
+      setMessages([])
+    } catch (error) {
+      setError(handleApiError(error))
+    }
+  }
+
+  const clearError = () => setError(null)
+
+  return {
+    messages,
+    isConnected,
+    isTyping,
+    error,
+    currentSessionId,
+    startChat,
+    sendMessage,
+    endChat,
+    clearError
+  }
 }
 
 // File validation utility
