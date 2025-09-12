@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 import { io, Socket } from 'socket.io-client'
 
 // API Configuration
-const API_BASE_URL = process.env.API_BASE_URL || 'https://agrilens-api-backend.onrender.com/'
+const API_BASE_URL = process.env.API_BASE_URL || 'https://agrilens-backend-docker.onrender.com'
 
 // Types
 export interface User {
