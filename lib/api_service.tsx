@@ -190,16 +190,32 @@ class AgriLensAPI {
 
   // Diagnosis endpoints
   async diagnosePlant(imageFile: File): Promise<Diagnosis> {
-    const formData = new FormData()
-    formData.append('images', imageFile)
-
-    const response: AxiosResponse<Diagnosis> = await this.axiosInstance.post('/diagnose', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
+  // Convert File -> base64 string
+  const toBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        // Remove the "data:image/...;base64," prefix
+        const base64String = (reader.result as string).split(',')[1]
+        resolve(base64String)
       }
+      reader.onerror = (error) => reject(error)
     })
-    return response.data
   }
+
+  const base64Image = await toBase64(imageFile)
+
+  // Send JSON instead of formData
+  const response: AxiosResponse<Diagnosis> = await this.axiosInstance.post(
+    '/diagnose',
+    { image: base64Image },
+    { headers: { 'Content-Type': 'application/json' } }
+  )
+
+  return response.data
+}
+
 
   async getDiagnosisHistory(): Promise<Diagnosis[]> {
     const response: AxiosResponse<Diagnosis[]> = await this.axiosInstance.get('/diagnoses')
