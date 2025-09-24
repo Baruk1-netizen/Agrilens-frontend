@@ -393,8 +393,8 @@ const UploadSection = () => {
             className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 flex items-center space-x-4"
           >
             <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0" />
-            
-            <div className="flex-grow flex flex-col md:flex-row md:items-center md:justify-between space-y-2 md:space-y-0 md:space-x-4">
+
+            <div className="flex flex-col gap-4">
             <div>
               <h3 className="text-amber-400 font-semibold mb-2">Authentication Required</h3>
               <p className="text-gray-300">Please log in to your account to analyze plant images and get personalized recommendations.</p>
