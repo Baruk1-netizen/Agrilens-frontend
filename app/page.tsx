@@ -385,17 +385,19 @@ const UploadSection = () => {
           <p className="text-xl text-gray-300">Get instant disease detection and treatment recommendations</p>
         </motion.div>
 
-            {/* Auth Modal */}
-            <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+        {/* Auth Modal */}
+        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
 
         {/* Authentication Warning */}
         {!isAuthenticated && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 flex items-center space-x-4"
+            className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 inline-flex items-center space-x-4"
           >
+            <div>
             <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0" />
+            </div>
 
             <div className="flex flex-col gap-4">
             <div>
