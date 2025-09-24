@@ -393,11 +393,11 @@ const UploadSection = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 inline-flex items-center space-x-4"
+            className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6 mb-8 flex items-center space-x-4"
           >
-            <div>
-            <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0" />
-            </div>
+            
+            <AlertCircle className="h-6 w-6 text-amber-400 flex-shrink-0 mb-2" />
+           
 
             <div className="flex flex-col gap-4">
             <div>
