@@ -41,7 +41,7 @@ export const AuthModal = ({ isOpen, onClose, initialView = "login" }: AuthModalP
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="bg-slate-900 border border-emerald-500/20 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-y-auto max-h-[90vh] mt-10 scrollbar-hide"
+              className="bg-slate-900 border border-emerald-500/20 rounded-2xl p-6 w-full max-w-sm shadow-2xl relative overflow-y-auto max-h-[90vh] my-auto scrollbar-hide"
               onClick={(e) => e.stopPropagation()}
               style={{
                 scrollbarWidth: 'none', /* Firefox */
