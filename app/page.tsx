@@ -8,6 +8,7 @@ import { motion } from "framer-motion"
 import { Upload, Camera, CheckCircle, Microscope, MessageCircle, Droplets, BarChart3, Users, Shield, Star, AlertCircle, Loader2 } from "lucide-react"
 import AIRecommendations from "@/components/Ai/ai-recommendations"
 import { apiService, validateImageFile, handleApiError, type Diagnosis } from "@/lib/api_service"
+import { AuthModal } from "@/components/Auth/auth-modal"
 
 // Internal Features Section (not exported)
 const FeaturesSection = () => {
@@ -218,6 +219,7 @@ const UploadSection = () => {
   const [stream, setStream] = useState<MediaStream | null>(null)
   const videoRef = React.useRef<HTMLVideoElement>(null)
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   // Check authentication on component mount
   React.useEffect(() => {
@@ -395,6 +397,18 @@ const UploadSection = () => {
               <h3 className="text-amber-400 font-semibold mb-2">Authentication Required</h3>
               <p className="text-gray-300">Please log in to your account to analyze plant images and get personalized recommendations.</p>
             </div>
+            <div>
+            <motion.button
+              onClick={() => setShowAuthModal(true)}
+              className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-2 rounded-full hover:from-emerald-600 hover:to-teal-700 transition-all duration-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Get Started
+            </motion.button>
+            </div>
+            {/* Auth Modal */}
+            <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
           </motion.div>
         )}
 
