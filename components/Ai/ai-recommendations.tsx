@@ -15,6 +15,7 @@ import {
   PowerOff,
 } from "lucide-react"
 import { useChat, apiService } from "../../lib/api_service"
+import { AuthModal } from "../Auth/auth-modal"
 
 function AIRecommendations() {
   const [isMounted, setIsMounted] = useState(false)
@@ -22,6 +23,7 @@ function AIRecommendations() {
   const [isRecording, setIsRecording] = useState(false)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const [showAuthModal, setShowAuthModal] = useState(false)
 
   const {
     messages,
@@ -180,12 +182,17 @@ function AIRecommendations() {
             Please log in to access the AI chat assistant and get personalized
             recommendations based on your diagnosis history.
           </p>
+
           <button
-            onClick={() => (window.location.href = "/login")}
+            onClick={() => setShowAuthModal(true)}
             className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-2 rounded-lg hover:from-emerald-600 hover:to-teal-700 transition-all duration-200"
           >
             Go to Login
           </button>
+
+       {/* Auth Modal */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+      
         </div>
       </div>
     )
