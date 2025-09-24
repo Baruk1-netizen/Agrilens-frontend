@@ -385,6 +385,9 @@ const UploadSection = () => {
           <p className="text-xl text-gray-300">Get instant disease detection and treatment recommendations</p>
         </motion.div>
 
+            {/* Auth Modal */}
+            <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+
         {/* Authentication Warning */}
         {!isAuthenticated && (
           <motion.div
@@ -413,8 +416,7 @@ const UploadSection = () => {
 
             </div>
 
-            {/* Auth Modal */}
-            <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+
           </motion.div>
         )}
 
