@@ -191,7 +191,7 @@ function AIRecommendations() {
           </button>
 
        {/* Auth Modal */}
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="login" />
       
         </div>
       </div>
