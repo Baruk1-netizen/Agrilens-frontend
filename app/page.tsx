@@ -386,7 +386,7 @@ const UploadSection = () => {
         </motion.div>
 
         {/* Auth Modal */}
-        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="signup" />
+        <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} initialView="login" />
 
         {/* Authentication Warning */}
         {!isAuthenticated && (
