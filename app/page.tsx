@@ -9,6 +9,7 @@ import { Upload, Camera, CheckCircle, Microscope, MessageCircle, Droplets, BarCh
 import AIRecommendations from "@/components/Ai/ai-recommendations"
 import { apiService, validateImageFile, handleApiError, type Diagnosis } from "@/lib/api_service"
 import { AuthModal } from "@/components/Auth/auth-modal"
+import imageCompression from 'browser-image-compression';
 
 // Internal Features Section (not exported)
 const FeaturesSection = () => {
@@ -344,26 +345,46 @@ const UploadSection = () => {
   }
 
   const handleDiagnose = async () => {
-    if (!selectedFile) return
-    
+    if (!selectedFile) return;
+
     if (!isAuthenticated) {
-      setError("Please log in to analyze your plant images")
-      return
+      setError("Please log in to analyze your plant images");
+      return;
     }
 
-    setIsLoading(true)
-    setError(null)
-    
+    setIsLoading(true);
+    setError(null);
+
     try {
-      const result = await apiService.diagnosePlant(selectedFile)
-      setDiagnosis(result)
+      let fileToDiagnose = selectedFile;
+      const oneMB = 1024 * 1024;
+      
+      // Compress image if it's larger than 1MB
+      if (selectedFile.size > oneMB) {
+        try {
+          const options = {
+            maxSizeMB: 1,
+            useWebWorker: true,
+          };
+          console.log(`Original image size: ${selectedFile.size / oneMB} MB. Compressing...`);
+          fileToDiagnose = await imageCompression(selectedFile, options);
+          console.log(`Compressed image size: ${fileToDiagnose.size / oneMB} MB`);
+        } catch (compressionError) {
+          console.error("Error during image compression:", compressionError);
+          // Optionally, you could set an error state here and return
+          // For now, we'll proceed with the original file
+        }
+      }
+
+      const result = await apiService.diagnosePlant(fileToDiagnose);
+      setDiagnosis(result);
     } catch (err) {
-      const errorMessage = handleApiError(err)
-      setError(errorMessage)
+      const errorMessage = handleApiError(err);
+      setError(errorMessage);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const resetUpload = () => {
     setUploadedImage(null)
