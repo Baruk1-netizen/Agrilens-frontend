@@ -554,10 +554,10 @@ const UploadSection = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="bg-slate-700/50 rounded-lg p-3">
+                  {/* <div className="bg-slate-700/50 rounded-lg p-3">
                     <div className="text-emerald-400 font-semibold">Confidence</div>
                     <div className="text-white">{formatConfidenceScore(diagnosis.confidenceScore)}</div>
-                  </div>
+                  </div> */}
                   <div className="bg-slate-700/50 rounded-lg p-3">
                     <div className="text-emerald-400 font-semibold">Analyzed</div>
                     <div className="text-white">{new Date(diagnosis.createdAt).toLocaleDateString()}</div>
