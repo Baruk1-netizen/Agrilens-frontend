@@ -357,20 +357,20 @@ const UploadSection = () => {
 
     try {
       let fileToDiagnose = selectedFile;
-      const oneMB = 1024 * 1024;
+      const kbSize = 16 * 16;
 
-      console.log(`Selected file size: ${selectedFile.size / oneMB} MB`);
+      console.log(`Selected file size: ${selectedFile.size / kbSize} MB`);
       
       // Compress image if it's larger than 1MB
-      if (selectedFile.size > oneMB) {
+      if (selectedFile.size > kbSize) {
         try {
           const options = {
-            maxSizeMB: 1,
+            maxSizeMB: 0.015625,
             useWebWorker: true,
           };
-          console.log(`Original image size: ${selectedFile.size / oneMB} MB. Compressing...`);
+          console.log(`Original image size: ${selectedFile.size} KB. Compressing...`);
           fileToDiagnose = await imageCompression(selectedFile, options);
-          console.log(`Compressed image size: ${fileToDiagnose.size / oneMB} MB`);
+          console.log(`Compressed image size: ${fileToDiagnose.size} KB`);
         } catch (compressionError) {
           console.error("Error during image compression:", compressionError);
           // Optionally, you could set an error state here and return
