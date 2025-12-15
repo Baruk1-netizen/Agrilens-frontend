@@ -358,6 +358,8 @@ const UploadSection = () => {
     try {
       let fileToDiagnose = selectedFile;
       const oneMB = 1024 * 1024;
+
+      console.log(`Selected file size: ${selectedFile.size / oneMB} MB`);
       
       // Compress image if it's larger than 1MB
       if (selectedFile.size > oneMB) {
